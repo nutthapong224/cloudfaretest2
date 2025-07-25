@@ -1,0 +1,48 @@
+services:
+  backend2:
+    build: .
+    ports:
+      - "${PORTBACKEND}:${PORTBACKEND}"
+    volumes:
+      - .:/usr/src/app
+      - ./upload:/usr/src/app/upload
+    env_file:
+      - .env
+    depends_on:
+      db2:
+        condition: service_healthy
+
+  db2:
+    image: bitnami/mariadb:latest
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DB_PASS}"
+      MARIADB_DATABASE: "${DB_NAME}"
+      MARIADB_USER: "${DB_USER}"
+      MARIADB_PASSWORD: "${ADMIN_PASSWORD}"
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data2:/bitnami/mariadb
+      - ./initdb:/docker-entrypoint-initdb.d  # 👈 ใช้ SQL auto init ที่นี่
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin2
+    environment:
+      PMA_HOST: db2
+      PMA_COOKIE_NAME: "phpMyAdmin_2"
+    ports:
+      - "8081:80"
+    depends_on:
+      - db2
+
+volumes:
+  db_data2:
+    name: app_db_data2
+    driver: local

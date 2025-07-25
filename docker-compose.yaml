@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontendgame
+      dockerfile: Dockerfile
+    ports:
+      - "5174:5174"
+    volumes:
+      - ./cloudfaretest:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+    env_file:
+      - .env
+    command: npm run dev
+    depends_on:
+      - backend2
+    networks:
+      - app-network
+
+  backend2:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "${PORTBACKEND}:${PORTBACKEND}"
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      NODE_ENV: development
+      PORT: ${PORTBACKEND}
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+      FRONTEND1: ${FRONTEND1}
+      FRONTEND2: ${FRONTEND2}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    env_file:
+      - .env
+    depends_on:
+      db2:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  db2:
+    image: bitnami/mariadb:latest
+    container_name: apex-db2
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_PASS}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASS}
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mariadb_data:/bitnami/mariadb
+      - ./db-init:/docker-entrypoint-initdb.d
+    user: root
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflare-tunnel
+    restart: always
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    networks:
+      - app-network
+
+  phpmyadmin2:
+    image: phpmyadmin/phpmyadmin
+    container_name: apex-phpmyadmin-2
+    restart: always
+    environment:
+      PMA_HOST: db2
+      PMA_USER: ${DB_USER}
+      PMA_PASSWORD: ${DB_PASS}
+    ports:
+      - "8081:80"
+    env_file:
+      - .env
+    depends_on:
+      - db2
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
