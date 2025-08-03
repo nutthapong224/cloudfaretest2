@@ -7,7 +7,7 @@ export default function Dashboard({ setAuth }) {
   const handleLogout = async () => {
     const refreshToken = localStorage.getItem('refreshToken');
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/logout`, { token: refreshToken });
+      await axios.post(`/api/auht/logout`, { token: refreshToken });
     } catch (err) {
       console.error('Logout error', err);
     }
