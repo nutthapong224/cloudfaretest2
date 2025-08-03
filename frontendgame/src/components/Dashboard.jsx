@@ -7,7 +7,7 @@ export default function Dashboard({ setAuth }) {
   const handleLogout = async () => {
     const refreshToken = localStorage.getItem('refreshToken');
     try {
-      await axios.post(`/api/auht/logout`, { token: refreshToken });
+      await axios.post(`/api/auth/logout`, { token: refreshToken });
     } catch (err) {
       console.error('Logout error', err);
     }
