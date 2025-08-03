@@ -14,7 +14,7 @@ export default function Register() {
     setError('');
     setSuccess('');
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/register`, {
+      await axios.post(`/api/auht/register`, {
         username,
         password,
       });
