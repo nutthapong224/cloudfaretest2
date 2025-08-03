@@ -14,7 +14,7 @@ export default function Register() {
     setError('');
     setSuccess('');
     try {
-      await axios.post(`/api/auht/register`, {
+      await axios.post(`/api/auth/register`, {
         username,
         password,
       });
