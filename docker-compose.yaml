@@ -18,6 +18,7 @@ services:
     # command: npm run dev
     depends_on:
       - backend2
+    restart: always                     # <-- เพิ่ม restart: always
     networks:
       - app-network
 
@@ -47,6 +48,7 @@ services:
     depends_on:
       db2:
         condition: service_healthy
+    restart: always                     # <-- เพิ่ม restart: always
     networks:
       - app-network
 
@@ -78,7 +80,7 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: cloudflare-tunnel
-    restart: always
+    restart: always                     # <-- เพิ่ม restart: always (มีอยู่แล้วด้วย)
     command: tunnel --no-autoupdate run
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
@@ -88,7 +90,7 @@ services:
   phpmyadmin2:
     image: phpmyadmin/phpmyadmin
     container_name: apex-phpmyadmin-2
-    restart: always
+    restart: always                     # <-- เพิ่ม restart: always (มีอยู่แล้ว)
     environment:
       PMA_HOST: db2
       PMA_USER: ${DB_USER}
