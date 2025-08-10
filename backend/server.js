@@ -24,6 +24,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
-app.use('/users', userRoutes);
+app.use('/api/users', userRoutes);
 const port = process.env.PORTBACKEND || 5000;
-app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on http://0.0.0.0:${port}`);
+});
