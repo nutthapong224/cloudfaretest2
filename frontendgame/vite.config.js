@@ -11,7 +11,7 @@ export default defineConfig({
   },
   server: {
     host: true,
-    port: 5174,
+    port: 80,
     open: false,
     proxy: {
       '/api': {
@@ -25,6 +25,5 @@ export default defineConfig({
         secure: false,
       }
     }
-  },
-  base: '/',
+  }
 });

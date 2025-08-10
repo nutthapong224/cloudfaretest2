@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import './Register.css';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -14,7 +15,7 @@ export default function Register() {
     setError('');
     setSuccess('');
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/register`, {
+      await axios.post(`/api/auth/register`, {
         username,
         password,
       });
@@ -28,29 +29,32 @@ export default function Register() {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
+    <div className="container">
+      <h2 className="title">Register</h2>
+
+      {error && <p className="message error">{error}</p>}
+      {success && <p className="message success">{success}</p>}
+
       <form onSubmit={handleSubmit}>
         <input
           placeholder="Username"
           value={username}
           onChange={e => setUsername(e.target.value)}
           required
+          autoComplete="username"
         />
-        <br />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
+          autoComplete="new-password"
         />
-        <br />
         <button type="submit">Register</button>
       </form>
-      <p>
+
+      <p className="link-text">
         Have an account? <Link to="/login">Login</Link>
       </p>
     </div>

@@ -1,26 +1,12 @@
-# Use the official Node.js image as a base
-FROM node:20
-
-# Set the working directory inside the container
+FROM node:20-alpine AS builder
 WORKDIR /app
-
-# Copy the package.json and package-lock.json files
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
-
-# Install Vite globally for build and preview commands
-RUN npm install -g vite
-
-# Copy the rest of the application code
 COPY . .
-
-# Build the Vite app for production
 RUN npm run build
 
-# Expose the port that matches your Kubernetes configuration
-EXPOSE 5174
-
-# Start the Vite preview server binding to 0.0.0.0 and port 5173
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "5174"]
+FROM nginx:alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

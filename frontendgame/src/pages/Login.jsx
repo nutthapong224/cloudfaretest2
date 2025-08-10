@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import './Login.css';
 
 export default function Login({ setAuth }) {
   const [username, setUsername] = useState('');
@@ -12,7 +13,7 @@ export default function Login({ setAuth }) {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/login`, {
+      const res = await axios.post(`/api/auth/login`, {
         username,
         password,
       });
@@ -26,28 +27,31 @@ export default function Login({ setAuth }) {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div className="container">
+      <h2 className="title">Login</h2>
+
+      {error && <p className="message">{error}</p>}
+
       <form onSubmit={handleSubmit}>
         <input
           placeholder="Username"
           value={username}
           onChange={e => setUsername(e.target.value)}
           required
+          autoComplete="username"
         />
-        <br />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
+          autoComplete="current-password"
         />
-        <br />
         <button type="submit">Login</button>
       </form>
-      <p>
+
+      <p className="link-text">
         Don't have account? <Link to="/register">Register</Link>
       </p>
     </div>

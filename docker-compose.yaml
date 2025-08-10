@@ -6,16 +6,16 @@ services:
       context: ./frontendgame
       dockerfile: Dockerfile
     ports:
-      - "5174:5174"
-    volumes:
-      - ./frontendgame:/app
-      - /app/node_modules
+      - "80:80"
+    # volumes:
+    #   - ./frontendgame:/app
+    #   - /app/node_modules
     environment:
       NODE_ENV: development
-      ‎VITE_API_URL: ${‎VITE_API_URL}
+      VITE_API_URL: ${VITE_API_URL}
     env_file:
       - .env
-    command: npm run dev
+    # command: npm run dev
     depends_on:
       - backend2
     networks:
@@ -60,7 +60,7 @@ services:
       MARIADB_USER: ${DB_USER}
       MARIADB_PASSWORD: ${DB_PASS}
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - ./mariadb_data:/bitnami/mariadb
       - ./db-init:/docker-entrypoint-initdb.d
@@ -94,7 +94,7 @@ services:
       PMA_USER: ${DB_USER}
       PMA_PASSWORD: ${DB_PASS}
     ports:
-      - "8081:80"
+      - "8080:80"
     env_file:
       - .env
     depends_on:
