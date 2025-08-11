@@ -7,18 +7,14 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:80"
-    # volumes:
-    #   - ./frontendgame:/app
-    #   - /app/node_modules
     environment:
       NODE_ENV: production
       VITE_API_URL: ${VITE_API_URL}
     env_file:
       - .env
-    # command: npm run dev
     depends_on:
       - backend2
-    restart: always                     # <-- เพิ่ม restart: always
+    restart: always                     
     networks:
       - app-network
 
@@ -48,7 +44,7 @@ services:
     depends_on:
       db2:
         condition: service_healthy
-    restart: always                     # <-- เพิ่ม restart: always
+    restart: always                    
     networks:
       - app-network
 
@@ -80,27 +76,10 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: cloudflare-tunnel
-    restart: always                     # <-- เพิ่ม restart: always (มีอยู่แล้วด้วย)
+    restart: always                     
     command: tunnel --no-autoupdate run
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
-    networks:
-      - app-network
-
-  phpmyadmin2:
-    image: phpmyadmin/phpmyadmin
-    container_name: apex-phpmyadmin-2
-    restart: always                     # <-- เพิ่ม restart: always (มีอยู่แล้ว)
-    environment:
-      PMA_HOST: db2
-      PMA_USER: ${DB_USER}
-      PMA_PASSWORD: ${DB_PASS}
-    ports:
-      - "8080:80"
-    env_file:
-      - .env
-    depends_on:
-      - db2
     networks:
       - app-network
 

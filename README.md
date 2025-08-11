@@ -1,12 +1,11 @@
 
-# Deploy Vite+ nodejs + MariaDB + phpMyAdmin with Docker Compose on Ubuntu 24.04
+# Deploy Vite+ nodejs + MariaDB  with Docker Compose on Ubuntu 24.04
 
 ## รายละเอียดโปรเจกต์
 - ใช้ MariaDB (Bitnami) เป็นฐานข้อมูล  
-- ใช้ phpMyAdmin สำหรับจัดการฐานข้อมูลผ่านเว็บ  
-- ใช้ PHP 8.2 + Apache รันเว็บ PHP  
-- เชื่อมต่อ PHP กับฐานข้อมูลผ่าน mysqli extension  
-- โฟลเดอร์ `./php` เป็นที่เก็บไฟล์ PHP และไฟล์ SQL สำหรับ initial database
+- ใช้ Vite react สำหรับจัดการฐานข้อมูลผ่านเว็บ  
+- ใช้ Node   
+
 
 ---
 
@@ -49,19 +48,41 @@ docker --v
 
 ### 3. clone project ลงมา 
 
-สมมติโฟลเดอร์โปรเจกต์ชื่อ `my-php-app`
+สมมติโฟลเดอร์โปรเจกต์ชื่อ `cloudfaretest2`
 
 ```bash
 git clone https://github.com/nutthapong224/cloudfaretest2.git
 ```
-
-วางไฟล์ `docker-compose.yaml` และโฟลเดอร์ `php` ที่มีไฟล์ PHP และไฟล์ SQL สำหรับ initial database ไว้ที่นี่
-
 ---
 ### 4. เข้าไปยัง โปรเจค 
 ```bash
  cd cloudfaretest2
 ```
+### 4. เข้าไปยัง แก้ไฟล์ โปรเจค ให้ใช้คำสั่ง nano ในการแก้ไข
+```bash
+ nano .env
+```
+### 4.1 ให้แก้ config  VITE_API_URL คือ api ที่ใช้ connect backend ตัวอย่างเช่น api 192.168.1.200 ให้เขียนว่า 192.168.1.200:5000/api ดังภาพที่ 1
+![](images/2025-08-11-20-12-11.png)
+
+### 4.2 FONTEND1,FONTEND2 คือการ อนุญาติ ให้ FRONTEND สามารถเข้าสู cors ได้เช่น   ดังภาพที่ 2
+![](images/2025-08-11-20-18-51.png)
+
+### 4.3 ให้ใส่ token ที่ได้ จาก cloduflare tunnel ลงใน .env ดังภาพที่3 เพื่อให้ใช้งาน cloudflare tunnel
+![](images/2025-08-11-20-15-35.png)
+### 4.3 เมื่อแก้ไขสำเร็จให้กด ctrl+s แล้วกด ctrl+x
+
+### 5. เราสามารถแก้ไข nginx.config เพื่อสามารถ รองรับการ host ของชื่อ domain ของเรา ได้ จาก folder frontendgame แล้ว nano เพื่อแก้ไข
+
+```bash
+cd frontendgame
+```
+```bash
+nano nginx.conf
+```
+### ให้แก้ บรรทัดนี้ เป็นชื่อ โดเมนที่เราต้องการที่จะใช้งาน
+![](images/2025-08-11-20-22-58.png)
+### เมื่อแก้ไขสำเร็จให้กด ctrl+s แล้วกด ctrl+x
 
 ### 5. รัน Docker Compose
 
@@ -76,57 +97,11 @@ docker compose up -d --build
 ### 6. ตรวจสอบสถานะ container
 
 ```bash
-sudo docker compose ps
+docker compose ps
 ```
 
-- `apex-db2` (MariaDB) ควรอยู่ในสถานะ `healthy`  
-- `apex-phpmyadmin-2` พร้อมใช้งานที่พอร์ต 8080  
-- `php-app` พร้อมใช้งานที่พอร์ต 80
-
----
-
-### 7. เข้าถึงบริการ
-
-- เข้าหน้าเว็บ PHP ของคุณผ่าน:  
-  http://localhost หรือ http://<your-server-ip>  
-
-- เข้าหน้า phpMyAdmin เพื่อจัดการฐานข้อมูลผ่านเว็บ:  
-  http://localhost:8080 หรือ http://<your-server-ip>:8080  
-
-ใช้ username/password ที่กำหนดใน `docker-compose.yaml` คือ `testuser` / `testpass`
-
----
-
-### 8. การหยุดและลบ container
+### 7. การหยุดและลบ container
 
 ```bash
-sudo docker compose down
+docker compose down
 ```
-
----
-
-### หมายเหตุ
-
-- ไฟล์และฐานข้อมูลจะถูกเก็บในโฟลเดอร์ `./mariadb_data` เพื่อเก็บข้อมูลถาวร  
-- หากต้องการเริ่มฐานข้อมูลใหม่ให้ลบโฟลเดอร์ `mariadb_data` ก่อนแล้วรันใหม่  
-- โฟลเดอร์ `./php` จะแมปไปยัง `/var/www/html` ของ container PHP  
-
----
-
-## ตัวอย่างคำสั่งที่ใช้งานบ่อย
-
-- ดู log ของ container MariaDB
-
-  ```bash
-  sudo docker logs apex-db2 -f
-  ```
-
-- เข้าไป shell container PHP
-
-  ```bash
-  sudo docker exec -it php-app bash
-  ```
-
----
-
-หากมีคำถามหรือปัญหา สามารถแจ้งได้ครับ!
